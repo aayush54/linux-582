@@ -14,6 +14,7 @@
 #include <linux/prefetch.h>		/* prefetchw			*/
 #include <linux/context_tracking.h>	/* exception_enter(), ...	*/
 #include <linux/uaccess.h>		/* faulthandler_disabled()	*/
+#include <linux/syscalls.h>
 
 #include <asm/cpufeature.h>		/* boot_cpu_has, ...		*/
 #include <asm/traps.h>			/* dotraplinkage, ...		*/
@@ -1470,6 +1471,18 @@ do_page_fault(struct pt_regs *regs, unsigned long error_code)
 }
 NOKPROBE_SYMBOL(do_page_fault);
 
+
+SYSCALL_DEFINE1(stephen, char *, msg)
+{
+	char buf[256];
+	long copied = strncpy_from_user(buf, msg, sizeof(buf));
+	if (copied < 0 || copied == sizeof(buf))
+	return -EFAULT;
+	unsigned long cr2 = read_cr2();
+	printk(KERN_INFO "stephen syscall called with \"%s\" CR2 value: %lu\n", buf, cr2);
+	return 0;
+}
+
 #ifdef CONFIG_TRACING
 static nokprobe_inline void
 trace_page_fault_entries(unsigned long address, struct pt_regs *regs,
@@ -1500,3 +1513,4 @@ trace_do_page_fault(struct pt_regs *regs, unsigned long error_code)
 }
 NOKPROBE_SYMBOL(trace_do_page_fault);
 #endif /* CONFIG_TRACING */
+

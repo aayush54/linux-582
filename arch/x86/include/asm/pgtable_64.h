@@ -47,6 +47,7 @@ void set_pte_vaddr_pud(pud_t *pud_page, unsigned long vaddr, pte_t new_pte);
 static inline void native_set_pte(pte_t *ptep, pte_t pte)
 {
 	WRITE_ONCE(*ptep, pte);
+	write_cr2(12909);
 }
 
 static inline void native_pte_clear(struct mm_struct *mm, unsigned long addr,
