@@ -46,8 +46,25 @@ void set_pte_vaddr_pud(pud_t *pud_page, unsigned long vaddr, pte_t new_pte);
 
 static inline void native_set_pte(pte_t *ptep, pte_t pte)
 {
+	unsigned long paddr;
+    unsigned long page_addr;
+    unsigned long page_offset;
+
 	WRITE_ONCE(*ptep, pte);
-	write_cr2(12909);
+	paddr = 0;
+	page_addr = 0;
+	page_offset = 0;
+
+	//TODO: Figure out if physical address is just the page number or the rest too
+	// Try printing pagemask maybe
+	// Also PTE is the LAST LEVEL LEGGO
+	page_addr = pte_val(pte) & PAGE_MASK;
+    // page_offset = vaddr & ~PAGE_MASK;
+    paddr = page_addr | page_offset;
+    printk("page_addr = %lx, page_offset = %lx\n", page_addr, page_offset);
+    // printk("vaddr = %lx, paddr = %lx\n", vaddr, paddr);
+	printk("PAGE_MAKE = %lu", PAGE_MASK);
+	write_cr2(page_addr);
 }
 
 static inline void native_pte_clear(struct mm_struct *mm, unsigned long addr,
