@@ -256,6 +256,7 @@ static inline void __native_flush_tlb_single(unsigned long addr)
 static inline void __flush_tlb_all(void)
 {
 	__flush_tlb_global();
+	write_cr2(0);
 	/*
 	 * Note: if we somehow had PCID but not PGE, then this wouldn't work --
 	 * we'd end up flushing kernel translations for the current ASID but
@@ -269,6 +270,7 @@ static inline void __flush_tlb_one(unsigned long addr)
 {
 	count_vm_tlb_event(NR_TLB_LOCAL_FLUSH_ONE);
 	__flush_tlb_single(addr);
+	write_cr2(0);
 }
 
 #define TLB_FLUSH_ALL	-1UL

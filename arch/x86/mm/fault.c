@@ -1479,7 +1479,7 @@ SYSCALL_DEFINE1(stephen, char *, msg)
 	if (copied < 0 || copied == sizeof(buf))
 	return -EFAULT;
 	unsigned long cr2 = read_cr2();
-	printk(KERN_INFO "stephen syscall called with \"%s\" CR2 value: %lu\n", buf, cr2);
+	printk(KERN_INFO "stephen syscall called with \"%s\" CR2 value (hex): %lx\n", buf, cr2);
 	return 0;
 }
 
